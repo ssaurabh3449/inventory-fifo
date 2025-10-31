@@ -10,22 +10,31 @@ const fs = require('fs');
 const path = require('path');
 
 const app = express();
-app.use(cors({
-  origin: [
-    'https://inventory-fifo-pvbjl24ne-ssaurabh3449s-projects.vercel.app', // your frontend domain
-    'http://localhost:3000' // optional, for local dev
-  ],
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
+
+app.use(
+  cors({
+    origin: [
+      'https://inventory-fifo.vercel.app', // ✅ final deployed frontend
+      'https://inventory-fifo-pvbjl24ne-ssaurabh3449s-projects.vercel.app', // preview domain
+      'http://localhost:3000', // local dev
+    ],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  })
+);
+
 app.use(bodyParser.json());
 
+// ✅ Public routes
+app.get('/', (req, res) => res.send('Inventory FIFO backend up'));
+app.get('/health', (req, res) => res.json({ ok: true })); // <-- public health endpoint
+
+// ✅ Protected API routes
 app.use('/api', requireAuth, apiRoutes);
-app.get('/', (req,res)=>res.send('Inventory FIFO backend up'));
 
 const port = process.env.PORT || 4000;
 
-// run migrations on startup (best-effort)
+// ✅ Run migrations before starting
 async function runMigrations() {
   try {
     const sql = fs.readFileSync(path.join(__dirname, '..', 'migrations', 'schema.sql'), 'utf8');
@@ -37,12 +46,12 @@ async function runMigrations() {
 }
 
 app.listen(port, async () => {
-  console.log(`Backend listening on ${port}`);
+  console.log(`✅ Backend listening on port ${port}`);
   await runMigrations();
   try {
     await consumer.startConsumer();
-    console.log('Kafka consumer started');
+    console.log('✅ Kafka consumer started');
   } catch (err) {
-    console.error('Failed to start Kafka consumer', err);
+    console.error('❌ Failed to start Kafka consumer', err);
   }
 });
