@@ -20,7 +20,7 @@ function App() {
   useEffect(() => {
     const checkBackend = async () => {
       try {
-        const res = await fetch('http://localhost:4000/health');
+        const res = await fetch(`${process.env.REACT_APP_API_URL}/api/products`);
         if (!res.ok) throw new Error('Backend unreachable');
       } catch (err) {
         // Backend down or database reset → clear auth
