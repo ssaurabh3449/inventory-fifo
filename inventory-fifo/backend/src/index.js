@@ -10,7 +10,14 @@ const fs = require('fs');
 const path = require('path');
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: [
+    'https://inventory-fifo-pvbjl24ne-ssaurabh3449s-projects.vercel.app', // your frontend domain
+    'http://localhost:3000' // optional, for local dev
+  ],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(bodyParser.json());
 
 app.use('/api', requireAuth, apiRoutes);
