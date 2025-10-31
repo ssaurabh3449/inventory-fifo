@@ -1,0 +1,69 @@
+services:
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: inventorydb
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./backend/initdb/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - inventory-net
+
+  redpanda:
+    image: redpandadata/redpanda:v23.2.2
+    container_name: redpanda
+    command:
+      - redpanda start
+      - --overprovisioned
+      - --smp 1
+      - --memory 1G
+      - --reserve-memory 0M
+      - --node-id 0
+      - --check=false
+      - --advertise-kafka-addr redpanda:9092
+      - --kafka-addr 0.0.0.0:9092
+      - --advertise-rpc-addr redpanda:33145
+    ports:
+      - "9092:9092"
+      - "9644:9644"
+    networks:
+      - inventory-net
+
+  backend:
+    build: ./backend
+    container_name: backend
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/inventorydb
+      KAFKA_BROKERS: redpanda:9092
+    depends_on:
+      - postgres
+      - redpanda
+    ports:
+      - "4000:4000"
+    networks:
+      - inventory-net
+
+  frontend:
+    build: ./frontend
+    container_name: frontend
+    environment:
+      REACT_APP_API_BASE: http://localhost:4000
+    depends_on:
+      - backend
+    ports:
+      - "3000:3000"
+    networks:
+      - inventory-net
+
+volumes:
+  postgres_data:
+
+networks:
+  inventory-net:
+    driver: bridge
+

@@ -1,0 +1,18 @@
+{
+  "name": "inventory-fifo-backend",
+  "version": "1.0.0",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "migrate": "psql $DATABASE_URL -f migrations/schema.sql || true"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "kafkajs": "^2.2.4",
+    "pg": "^8.11.0",
+    "dotenv": "^16.0.3",
+    "basic-auth": "^2.0.1",
+    "cors": "^2.8.5",
+    "body-parser": "^1.20.2"
+  }
+}
