@@ -121,7 +121,7 @@ export default function Dashboard({ authHeader, onLogout }) {
         }}
       >
         <h2 style={{ color: '#111827', marginBottom: '20px' }}>⚙️ Simulator</h2>
-        <Simulator onSimulate={simulateEvents} />
+        <Simulator onSimulate={simulateEvents} products={projects}/>
       </div>
     </div>
   );
