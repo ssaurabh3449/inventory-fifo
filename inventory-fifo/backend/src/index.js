@@ -12,7 +12,7 @@ const path = require('path');
 const app = express();
 app.use(cors({
   origin: [
-    'https://inventory-fifo.vercel.app/', // your frontend domain
+    'https://inventory-fifo.vercel.app', // your frontend domain
     'http://localhost:3000' // optional, for local dev
   ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
